@@ -20,9 +20,14 @@ def post_steve_run(configuration: str, response: Response):
     response.status_code = status.HTTP_404_NOT_FOUND
     return {}
 
+  # Ugly but I can't be bothered to use CMake correctly
+  steve_exe = "program/steve/bld/Debug/steve.exe"
+  if not os.path.exists(steve_exe):
+    steve_exe = "program/steve/bld/steve"
+
   output_path = f"tmp/{str(uuid.uuid4())}"
   error = subprocess.call(
-    ["program/steve/bld/Debug/steve",
+    [steve_exe,
      "--mid",
      "--random",
      f"--out={output_path}",
