@@ -11,7 +11,7 @@ router = APIRouter(prefix="/steve")
 
 @router.get("/configurations")
 def get_configurations():
-  return os.listdir("program/steve/cfg")
+  return list(map(lambda c: c.removesuffix('.steve.json'), os.listdir("program/steve/cfg")))
 
 @router.post("/run")
 def post_steve_run(configuration: str):
