@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Response, HTTPException
 from fastapi.responses import FileResponse
 import subprocess
 import os
@@ -14,11 +14,10 @@ def get_configurations():
   return os.listdir("program/steve/cfg")
 
 @router.post("/run")
-def post_steve_run(configuration: str, response: Response):
+def post_steve_run(configuration: str):
   config_path = f"program/steve/cfg/{configuration}.steve.json"
   if not os.path.exists(config_path):
-    response.status_code = status.HTTP_404_NOT_FOUND
-    return {}
+    raise HTTPException(status_code=404, detail=f"Configuration '{configuration}' not found")
 
   # Ugly but I can't be bothered to use CMake correctly
   steve_exe = "program/steve/bld/Debug/steve.exe"
@@ -33,8 +32,7 @@ def post_steve_run(configuration: str, response: Response):
      f"--out={output_path}",
      f"--config={config_path}"])
   if error != 0:
-    response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    return {}
+    raise HTTPException(status_code=500, detail=f"Steve process returned {error}")
 
   output_mid_path = f"{output_path}.mid"
   return FileResponse(path=output_mid_path, media_type="audio/midi", filename=os.path.basename(output_mid_path))
