@@ -32,7 +32,7 @@ def update():
     os.system(f"git pull --ff-only")
     for program in programs:
       os.system(f"git clone {program.GIT_REPO} program/{program.NAME}")
-      os.system(f"git -C program/{program.NAME} pull")
+      os.system(f"git -C program/{program.NAME} pull --ff-only")
       os.system(f"cmake -S program/{program.NAME} -B program/{program.NAME}/bld")
       os.system(f"cmake --build program/{program.NAME}/bld")
     os.system(f"find tmp -type f -mmin +15 -delete")
