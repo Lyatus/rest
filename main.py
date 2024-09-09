@@ -43,4 +43,4 @@ def update():
 update()
 
 if __name__ == "__main__":
-  uvicorn.run("main:app", port=5000, log_level="info", reload=True)
+  uvicorn.run("main:app", reload=True)
