@@ -29,6 +29,7 @@ def update():
     return
 
   if (second % 60) == 0:
+    os.system(f"git pull --ff-only")
     for program in programs:
       os.system(f"git clone {program.GIT_REPO} program/{program.NAME}")
       os.system(f"git -C program/{program.NAME} pull")
