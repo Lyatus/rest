@@ -5,6 +5,10 @@ import steve
 import os
 import uvicorn
 
+if __name__ == "__main__":
+  uvicorn.run("main:app", reload=True)
+  exit(0)
+
 programs = [steve]
 
 shutting_down = False
@@ -41,6 +45,3 @@ def update():
   Timer(1, update).start()
 
 update()
-
-if __name__ == "__main__":
-  uvicorn.run("main:app", reload=True)
