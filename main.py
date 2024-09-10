@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from threading import Timer
 import os
 import steve
+import subprocess
 import uvicorn
 
 if __name__ == "__main__":
@@ -47,13 +48,17 @@ def update():
     return
 
   if (second % 60) == 0:
-    os.system(f"git pull --ff-only")
+    print("Updating server...")
+    subprocess.run(["git", "pull", "--ff-only"])
     for program in programs:
       if not os.path.exists(f"program/{program.NAME}"):
-        os.system(f"git clone {program.GIT_REPO} program/{program.NAME}")
-      os.system(f"git -C program/{program.NAME} pull --ff-only")
-      os.system(f"cmake -S program/{program.NAME} -B program/{program.NAME}/bld")
-      os.system(f"cmake --build program/{program.NAME}/bld")
+        subprocess.run(["git", "clone", program.GIT_REPO, f"program/{program.NAME}"])
+      print(f"Updating program: {program.NAME}...")
+      pull_result = subprocess.run(["git", "-C", f"program/{program.NAME}", "pull", "--ff-only"], capture_output=True)
+
+      if not "Already up to date." in str(pull_result.stdout):
+        os.system(f"cmake -S program/{program.NAME} -B program/{program.NAME}/bld")
+        os.system(f"cmake --build program/{program.NAME}/bld")
     os.system(f"find tmp -type f -mmin +15 -delete")
   second += 1
   Timer(1, update).start()
