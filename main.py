@@ -1,8 +1,9 @@
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from threading import Timer
-import steve
 import os
+import steve
 import uvicorn
 
 if __name__ == "__main__":
@@ -22,6 +23,19 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 for program in programs:
   app.include_router(program.router)
+
+allow_origins = ["https://lutopia.net"]
+if os.getenv("DEBUG"):
+  print("Running in debug mode")
+  allow_origins.append("*")
+
+app.add_middleware(
+  CORSMiddleware,
+  allow_origins=allow_origins,
+  allow_credentials=True,
+  allow_methods=["*"],
+  allow_headers=["*"],
+)
 
 os.makedirs("tmp", exist_ok=True)
 
