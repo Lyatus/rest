@@ -50,15 +50,16 @@ def update(iteration = 0):
       if not os.path.exists(program_dir):
         subprocess.run(["git", "clone", program.GIT_REPO, program_dir])
       print(f"Updating program: {program.NAME}...")
-      subprocess.run(["git", "-C", program_dir, "pull", "--ff-only"])
+      pull_result = subprocess.run(["git", "-C", program_dir, "pull", "--ff-only"], capture_output=True)
 
       project_dir = program_dir
       if hasattr(program, 'PROJECT_DIR'):
         project_dir = os.path.join(project_dir, program.PROJECT_DIR)
       build_dir = os.path.join(project_dir, 'bld')
 
-      subprocess.run(["cmake", "-S", project_dir, "-B", build_dir, "-DCMAKE_BUILD_TYPE=Release"])
-      subprocess.run(["cmake", "--build", build_dir, "--config", "Release"])
+      if iteration == 0 or not "Already up to date." in str(pull_result.stdout):
+        subprocess.run(["cmake", "-S", project_dir, "-B", build_dir, "-DCMAKE_BUILD_TYPE=Release"])
+        subprocess.run(["cmake", "--build", build_dir, "--config", "Release"])
     os.system(f"find tmp -type f -mmin +15 -delete")
   update_timer = Timer(1, update, [iteration + 1])
   update_timer.start()
