@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import FileResponse
 import subprocess
 import os
 import uuid
@@ -27,12 +26,11 @@ def post_steve_run(configuration: str):
   output_path = f"tmp/{str(uuid.uuid4())}"
   error = subprocess.call(
     [steve_exe,
-     "--mid",
+     "-mt",
      "--random",
      f"--out={output_path}",
      f"--config={config_path}"])
   if error != 0:
     raise HTTPException(status_code=500, detail=f"Steve process returned {error}")
 
-  output_mid_path = f"{output_path}.mid"
-  return FileResponse(path=output_mid_path, media_type="audio/midi", filename=os.path.basename(output_mid_path))
+  return [f"{output_path}.mid",f"{output_path}.txt"]
