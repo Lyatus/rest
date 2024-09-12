@@ -19,7 +19,7 @@ def post_steve_run(configuration: str):
     raise HTTPException(status_code=404, detail=f"Configuration '{configuration}' not found")
 
   # Ugly but I can't be bothered to use CMake correctly
-  steve_exe = "program/steve/bld/Debug/steve.exe"
+  steve_exe = "program/steve/bld/Release/steve.exe"
   if not os.path.exists(steve_exe):
     steve_exe = "program/steve/bld/steve"
 

@@ -53,14 +53,19 @@ def update():
     print("Updating server...")
     subprocess.run(["git", "pull", "--ff-only"])
     for program in programs:
-      if not os.path.exists(f"program/{program.NAME}"):
-        subprocess.run(["git", "clone", program.GIT_REPO, f"program/{program.NAME}"])
+      program_dir = f"program/{program.NAME}"
+      if not os.path.exists(program_dir):
+        subprocess.run(["git", "clone", program.GIT_REPO, program_dir])
       print(f"Updating program: {program.NAME}...")
-      pull_result = subprocess.run(["git", "-C", f"program/{program.NAME}", "pull", "--ff-only"], capture_output=True)
+      subprocess.run(["git", "-C", program_dir, "pull", "--ff-only"])
 
-      if not "Already up to date." in str(pull_result.stdout):
-        os.system(f"cmake -S program/{program.NAME} -B program/{program.NAME}/bld")
-        os.system(f"cmake --build program/{program.NAME}/bld")
+      project_dir = program_dir
+      if hasattr(program, 'PROJECT_DIR'):
+        project_dir = os.path.join(project_dir, program.PROJECT_DIR)
+      build_dir = os.path.join(project_dir, 'bld')
+
+      subprocess.run(["cmake", "-S", project_dir, "-B", build_dir, "-DCMAKE_BUILD_TYPE=Release"])
+      subprocess.run(["cmake", "--build", build_dir, "--config", "Release"])
     os.system(f"find tmp -type f -mmin +15 -delete")
   second += 1
   Timer(1, update).start()
