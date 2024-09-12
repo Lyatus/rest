@@ -14,13 +14,11 @@ if __name__ == "__main__":
 
 programs = [steve]
 
-shutting_down = False
-
+update_timer = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-  global shutting_down
   yield
-  shutting_down = True
+  update_timer.cancel()
 
 app = FastAPI(lifespan=lifespan)
 for program in programs:
@@ -42,14 +40,9 @@ app.add_middleware(
 os.makedirs("tmp", exist_ok=True)
 app.mount("/tmp", StaticFiles(directory="tmp"), name="tmp")
 
-second = 0
-def update():
-  global shutting_down
-  global second
-  if shutting_down:
-    return
-
-  if (second % 60) == 0:
+def update(iteration = 0):
+  global update_timer
+  if (iteration % 60) == 0:
     print("Updating server...")
     subprocess.run(["git", "pull", "--ff-only"])
     for program in programs:
@@ -67,7 +60,7 @@ def update():
       subprocess.run(["cmake", "-S", project_dir, "-B", build_dir, "-DCMAKE_BUILD_TYPE=Release"])
       subprocess.run(["cmake", "--build", build_dir, "--config", "Release"])
     os.system(f"find tmp -type f -mmin +15 -delete")
-  second += 1
-  Timer(1, update).start()
+  update_timer = Timer(1, update, [iteration + 1])
+  update_timer.start()
 
 update()
