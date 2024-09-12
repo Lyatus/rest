@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from threading import Timer
 import os
 import steve
+import robin
 import subprocess
 import uvicorn
 
@@ -12,7 +13,7 @@ if __name__ == "__main__":
   uvicorn.run("main:app", reload=True)
   exit(0)
 
-programs = [steve]
+programs = [steve, robin]
 
 update_timer = None
 @asynccontextmanager
