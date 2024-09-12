@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from threading import Timer
 import os
 import steve
@@ -39,6 +40,7 @@ app.add_middleware(
 )
 
 os.makedirs("tmp", exist_ok=True)
+app.mount("/tmp", StaticFiles(directory="tmp"), name="tmp")
 
 second = 0
 def update():
