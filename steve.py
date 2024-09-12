@@ -12,8 +12,8 @@ router = APIRouter(prefix="/steve")
 def get_configurations():
   return list(map(lambda c: c.removesuffix('.steve.json'), os.listdir("program/steve/cfg")))
 
-@router.post("/run")
-def post_steve_run(configuration: str):
+@router.post("/generate")
+def generate(configuration: str):
   config_path = f"program/steve/cfg/{configuration}.steve.json"
   if not os.path.exists(config_path):
     raise HTTPException(status_code=404, detail=f"Configuration '{configuration}' not found")
