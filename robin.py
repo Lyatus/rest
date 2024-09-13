@@ -23,4 +23,6 @@ async def render(filename : str):
     raise HTTPException(status_code=500, detail=f"Robin process returned {error}")
 
   wav_path = os.path.splitext(filename)[0] + '.wav'
-  return [wav_path]
+  return {
+    "audio": wav_path,
+  }

@@ -35,4 +35,7 @@ async def generate(configuration: str):
   if error != 0:
     raise HTTPException(status_code=500, detail=f"Steve process returned {error}")
 
-  return [f"{filename}.mid",f"{filename}.txt"]
+  return {
+    "sequence": f"{filename}.mid",
+    "description": f"{filename}.txt",
+  }
