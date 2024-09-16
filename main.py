@@ -25,7 +25,10 @@ app = FastAPI(lifespan=lifespan)
 for program in programs:
   app.include_router(program.router)
 
-allow_origins = ["https://lutopia.net"]
+allow_origins = [
+  "https://lutopia.net",
+  "https://radio.lutopia.net"
+]
 if os.getenv("DEBUG"):
   print("Running in debug mode")
   allow_origins.append("*")
