@@ -27,7 +27,7 @@ async def generate(configuration: str):
   output_path = f"tmp/{filename}"
   error = subprocess.call([
     steve_exe,
-    "-mt",
+    "-mj",
     "--random",
     f"--out={output_path}",
     f"--config={config_path}"
@@ -37,5 +37,5 @@ async def generate(configuration: str):
 
   return {
     "sequence": f"{filename}.mid",
-    "description": f"{filename}.txt",
+    "description": f"{filename}.json",
   }
