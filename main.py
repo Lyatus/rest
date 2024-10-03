@@ -53,15 +53,18 @@ def update(iteration = 0):
       program_dir = f"program/{program.NAME}"
       if not os.path.exists(program_dir):
         subprocess.run(["git", "clone", program.GIT_REPO, program_dir])
-      print(f"Updating program: {program.NAME}...")
-      pull_result = subprocess.run(["git", "-C", program_dir, "pull", "--ff-only"], capture_output=True)
+      if not os.path.islink(program_dir): # Only update programs we cloned, linked repos should be left alone
+        print(f"Updating program: {program.NAME}...")
+        pull_result = subprocess.run(["git", "-C", program_dir, "pull", "--ff-only"], capture_output=True)
 
       project_dir = program_dir
       if hasattr(program, 'PROJECT_DIR'):
         project_dir = os.path.join(project_dir, program.PROJECT_DIR)
       build_dir = os.path.join(project_dir, 'bld')
 
-      if iteration == 0 or not "Already up to date." in str(pull_result.stdout):
+      if (iteration == 0 # Always been at startup
+      or os.path.islink(program_dir) # Always build when it's a local program
+      or not "Already up to date." in str(pull_result.stdout)): # Otherwise build upon git changes
         subprocess.run(["cmake", "-S", project_dir, "-B", build_dir, "-DCMAKE_BUILD_TYPE=Release"])
         subprocess.run(["cmake", "--build", build_dir, "--config", "Release"])
     os.system(f"find tmp -type f -mmin +15 -delete")
