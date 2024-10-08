@@ -67,7 +67,7 @@ def update(iteration = 0):
       or not "Already up to date." in str(pull_result.stdout)): # Otherwise build upon git changes
         subprocess.run(["cmake", "-S", project_dir, "-B", build_dir, "-DCMAKE_BUILD_TYPE=Release"])
         subprocess.run(["cmake", "--build", build_dir, "--config", "Release"])
-    os.system(f"find tmp -type f -mmin +15 -delete")
+    os.system(f"find tmp -type f -mmin +5 -delete")
   update_timer = Timer(1, update, [iteration + 1])
   update_timer.start()
 
