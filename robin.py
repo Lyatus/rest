@@ -28,12 +28,12 @@ async def render(filename : str):
     raise HTTPException(status_code=500, detail=f"Robin process returned {error}")
 
   wav_path = f"tmp/{filebase}.wav"
-  ogg_path = f"tmp/{filebase}.ogg"
+  mp3_path = f"tmp/{filebase}.mp3"
 
-  error = subprocess.call(["ffmpeg", "-i", wav_path, ogg_path])
+  error = subprocess.call(["ffmpeg", "-i", wav_path, mp3_path])
   if error != 0:
     raise HTTPException(status_code=500, detail=f"Ffmpeg process returned {error}")
 
   return {
-    "audio": os.path.basename(ogg_path),
+    "audio": os.path.basename(mp3_path),
   }
